@@ -6,6 +6,17 @@
              mc:Ignorable="d"
              x:Class="DominoApp.App">
     <Application.Resources>
-
+        <ResourceDictionary>
+            <Color x:Key="Backgroundcolor">#E4DFCF</Color>
+            <Color x:Key="TextColor">#FAF8F0</Color>
+            <Color x:Key="PrimaryColor">#043353</Color>
+            <Color x:Key="SecondaryColor">#E44652</Color>
+            <Style x:Key="ScoreTitle" TargetType="Label">
+                <Setter Property="TextColor" Value="{StaticResource SecondaryColor}"/>
+                <Setter Property="FontAttributes" Value="Bold"/>
+                <Setter Property="FontSize" Value="Large"/>
+                <Setter Property="HorizontalOptions" Value="Center"/>
+            </Style>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>

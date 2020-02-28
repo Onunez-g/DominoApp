@@ -24,7 +24,7 @@ namespace DominoApp.Data
         {
             if(!initialized && !Database.TableMappings.Any(m => m.MappedType.Name == typeof(MatchRound).Name))
             {
-                await Database.CreateTablesAsync(CreateFlags.AutoIncPK, typeof(MatchRound)).ConfigureAwait(false);
+                await Database.CreateTablesAsync(CreateFlags.None, typeof(MatchRound)).ConfigureAwait(false);
                 initialized = true;
             }
         }
@@ -42,5 +42,6 @@ namespace DominoApp.Data
             }
         }
         public async Task<int> DeleteMatchRound(int id) => await Database.DeleteAsync<MatchRound>(id);
+        public async Task<int> DeleteAllMatchRounds() => await Database.DeleteAllAsync<MatchRound>();
     }
 }

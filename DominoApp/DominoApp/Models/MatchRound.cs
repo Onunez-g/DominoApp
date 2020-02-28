@@ -8,7 +8,7 @@ namespace DominoApp.Models
 {
     public class MatchRound : INotifyPropertyChanged
     {
-        [PrimaryKey]
+        [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
         public int WeScore { get; set; }
         public int ThemScore { get; set; }
