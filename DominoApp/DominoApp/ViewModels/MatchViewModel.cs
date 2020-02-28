@@ -18,6 +18,7 @@ namespace DominoApp.ViewModels
         public ObservableCollection<MatchRound> MatchRounds { get; set; } = new ObservableCollection<MatchRound>();
         public ICommand AddMatchRoundCommand { get; set; }
         public ICommand DeleteMatchRoundCommand { get; set; }
+        public ICommand NewMatchCommand { get; set; }
         public MatchViewModel()
         {
             GetMatchRounds();
@@ -37,6 +38,11 @@ namespace DominoApp.ViewModels
             DeleteMatchRoundCommand = new Command<MatchRound>(async (round) =>
             {
                 await App.MatchDatabase.DeleteMatchRound(round.Id);
+                GetMatchRounds();
+            });
+            NewMatchCommand = new Command(async () =>
+            {
+                await App.MatchDatabase.DeleteAllMatchRounds();
                 GetMatchRounds();
             });
         }
