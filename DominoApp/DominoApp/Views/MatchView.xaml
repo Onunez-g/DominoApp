@@ -36,7 +36,16 @@
                     <control:ScoreEntry Text="{Binding MatchRound.ThemScore}" Keyboard="Numeric" Grid.Row="1" Grid.Column="0"/>
                     <control:ScoreEntry Text="{Binding MatchRound.WeScore}" Keyboard="Numeric" Grid.Row="1" Grid.Column="1"/>
                     <Button Text="Añadir ronda" Command="{Binding AddMatchRoundCommand}" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource TextColor}" CornerRadius="10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
-                    <ListView HeightRequest="400" x:Name="MatchRoundListView" ItemsSource="{Binding MatchRounds}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" SeparatorColor="{StaticResource SecondaryColor}">
+                    <ListView 
+                        IsRefreshing="{Binding IsRefreshing}"
+                        IsPullToRefreshEnabled="True"
+                        RefreshCommand="{Binding RefreshCommand}"
+                        HeightRequest="400" 
+                        x:Name="MatchRoundListView" 
+                        ItemsSource="{Binding MatchRounds}" 
+                        Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" 
+                        SeparatorColor="{StaticResource SecondaryColor}"
+                        >
                         <ListView.Header>
                             <Frame BackgroundColor="{StaticResource SecondaryColor}" Margin="0,10" CornerRadius="10">
                                 <Grid>
