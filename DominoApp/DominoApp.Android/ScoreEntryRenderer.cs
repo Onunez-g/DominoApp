@@ -30,7 +30,6 @@ namespace DominoApp.Droid
                 GradientDrawable gd = new GradientDrawable();
                 gd.SetColor(Android.Graphics.Color.ParseColor("#043353"));
                 gd.SetCornerRadius(15);
-                gd.SetStroke(2, Android.Graphics.Color.ParseColor("#FAF8F0"));
                 Control.SetPadding(30, 5, 5, 0);
                 Control.Background = gd;
                 Control.TextAlignment = Android.Views.TextAlignment.ViewEnd;

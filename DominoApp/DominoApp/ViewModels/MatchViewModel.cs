@@ -1,4 +1,5 @@
 ﻿using DominoApp.Models;
+using DominoApp.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -12,7 +13,7 @@ namespace DominoApp.ViewModels
 {
     class MatchViewModel : INotifyPropertyChanged
     {
-        public const int WinnerScore = 200; 
+        public BasicSettings BasicSettings { get; set; }
         public MatchRound MatchRound { get; set; } = new MatchRound();
         public int ThemTotalScore { get; set; } 
         public int WeTotalScore { get; set; } 
@@ -22,8 +23,10 @@ namespace DominoApp.ViewModels
         public ICommand DeleteMatchRoundCommand { get; set; }
         public ICommand NewMatchCommand { get; set; }
         public ICommand RefreshCommand { get; set; }
+        public ICommand GoToSettingsCommand { get; set; }
         public MatchViewModel()
         {
+            GetSettings();
             GetMatchRounds();
             AddMatchRoundCommand = new Command(async () =>
             {
@@ -34,7 +37,7 @@ namespace DominoApp.ViewModels
                     return;
                 }
                 await App.MatchDatabase.SaveMatchRound(MatchRound);
-                if(WeTotalScore + MatchRound.WeScore >= WinnerScore || ThemTotalScore + MatchRound.ThemScore >= WinnerScore)
+                if(WeTotalScore + MatchRound.WeScore >= BasicSettings.WinningScore || ThemTotalScore + MatchRound.ThemScore >= BasicSettings.WinningScore)
                 {
                     string winnerTeam = WeTotalScore + MatchRound.WeScore > ThemTotalScore + MatchRound.ThemScore ? "Nosotros" : "Ellos";
                     isNewGame =  await App.Current.MainPage.DisplayAlert("GANADOR", $"El equipo de {winnerTeam} ha ganado!", "Nueva partida", "Cerrar");
@@ -57,6 +60,7 @@ namespace DominoApp.ViewModels
                 GetMatchRounds();
             });
             RefreshCommand = new Command(() => GetMatchRounds());
+            GoToSettingsCommand = new Command(async () => await App.Current.MainPage.Navigation.PushModalAsync(new SettingsPage()));
         }
         async void GetMatchRounds()
         {
@@ -64,6 +68,10 @@ namespace DominoApp.ViewModels
             WeTotalScore = MatchRounds.Sum(x => x.WeScore);
             ThemTotalScore = MatchRounds.Sum(x => x.ThemScore);
             IsRefreshing = false;
+        }
+        async void GetSettings()
+        {
+            BasicSettings = await App.SettingsDatabase.GetBasicSettingsAsync();
         }
         #pragma warning disable 67
         public event PropertyChangedEventHandler PropertyChanged;

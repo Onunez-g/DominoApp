@@ -17,7 +17,12 @@
     <ContentPage.Content>
         <ScrollView>
             <StackLayout>
-                <StackLayout Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" BackgroundColor="{StaticResource PrimaryColor}">
+                <StackLayout Orientation="Horizontal" BackgroundColor="{StaticResource PrimaryColor}">
+                    <Image Source="Settings" HorizontalOptions="Start" Margin="10,0">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoToSettingsCommand}"/>
+                        </Image.GestureRecognizers>
+                    </Image>
                     <Button Text="Nuevo" HorizontalOptions="EndAndExpand" Margin="10" Command="{Binding NewMatchCommand}" BackgroundColor="{StaticResource SecondaryColor}" TextColor="{StaticResource TextColor}" CornerRadius="10"/>
                 </StackLayout>
                 <Grid Margin="20">
