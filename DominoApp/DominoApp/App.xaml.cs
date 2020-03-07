@@ -18,6 +18,16 @@ namespace DominoApp
                 return matchDatabase;
             }
         }
+        static SettingsDatabaseController settingsDatabase;
+        public static SettingsDatabaseController SettingsDatabase
+        {
+            get
+            {
+                if (settingsDatabase == null)
+                    settingsDatabase = new SettingsDatabaseController();
+                return settingsDatabase;
+            }
+        }
         public App()
         {
             InitializeComponent();
