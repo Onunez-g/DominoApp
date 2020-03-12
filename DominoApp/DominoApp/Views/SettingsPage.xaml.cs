@@ -16,7 +16,6 @@ namespace DominoApp.Views
         public SettingsPage()
         {
             InitializeComponent();
-            BindingContext = new SettingsViewModel();
         }
     }
 }

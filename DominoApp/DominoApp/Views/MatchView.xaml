@@ -12,6 +12,7 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <helper:ListViewIndexconverter x:Key="rowIndex"/>
+            <helper:NegateBooleanConverter x:Key="Inverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
@@ -42,6 +43,7 @@
                     <control:ScoreEntry Text="{Binding MatchRound.WeScore}" Keyboard="Numeric" Grid.Row="1" Grid.Column="1"/>
                     <Button Text="Añadir ronda" Command="{Binding AddMatchRoundCommand}" BackgroundColor="{StaticResource PrimaryColor}" TextColor="{StaticResource TextColor}" CornerRadius="10" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
                     <ListView 
+                        IsVisible="{Binding IsEmptyList, Converter={StaticResource Inverter}}"
                         IsRefreshing="{Binding IsRefreshing}"
                         IsPullToRefreshEnabled="True"
                         RefreshCommand="{Binding RefreshCommand}"
@@ -52,21 +54,7 @@
                         SeparatorColor="{StaticResource SecondaryColor}"
                         >
                         <ListView.Header>
-                            <Frame BackgroundColor="{StaticResource SecondaryColor}" Margin="0,10" CornerRadius="10">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="20"/>
-                                    </Grid.RowDefinitions>
-                                    <Label Text="TOTAL" TextColor="{StaticResource TextColor}" Grid.Column="0" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="Center"/>
-                                    <Label Text="{Binding ThemTotalScore}" TextColor="{StaticResource TextColor}" Margin="0,0,20,0" Grid.Column="1" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End"/>
-                                    <Label Text="{Binding WeTotalScore}" TextColor="{StaticResource TextColor}" Margin="0,0,20,0" Grid.Column="2" Grid.Row="0" VerticalOptions="Center" HorizontalOptions="End"/>
-                                </Grid>
-                            </Frame>
+                            <control:TotalView WeTotalScore="{Binding WeTotalScore}" ThemTotalScore="{Binding ThemTotalScore}"/>
                         </ListView.Header>
                         <ListView.ItemTemplate>
                             <DataTemplate>
@@ -88,6 +76,21 @@
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
+                    <StackLayout 
+                        IsVisible="{Binding IsEmptyList}"
+                        Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
+                        <control:TotalView />
+                        <Label 
+                            FontSize="Large"
+                            HeightRequest="300" 
+                            VerticalTextAlignment="Center" 
+                            HorizontalTextAlignment="Center" 
+                            BackgroundColor="{StaticResource TextColor}" 
+                            Text="Empieza una ronda ya!" 
+                            TextColor="Gray" 
+                            HorizontalOptions="FillAndExpand" 
+                            VerticalOptions="Center"/>
+                    </StackLayout>
                 </Grid>
             </StackLayout>
         </ScrollView>

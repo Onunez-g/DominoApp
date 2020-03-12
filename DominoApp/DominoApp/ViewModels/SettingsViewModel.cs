@@ -1,35 +1,33 @@
-﻿using DominoApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Windows.Input;
-using Xamarin.Forms;
+﻿using DominoApp.Data;
+using DominoApp.Models;
+using Prism.Commands;
+using Prism.Navigation;
 
 namespace DominoApp.ViewModels
 {
-    public class SettingsViewModel
-    {
-        public BasicSettings BasicSettings { get; set; } 
-        public ICommand SaveSettingsCommand { get; set; }
-        public ICommand ReturnToGameCommand { get; set; }
-        public SettingsViewModel()
+    public class SettingsViewModel : BaseViewModel
+    { 
+        public DelegateCommand SaveSettingsCommand { get; set; }
+        public DelegateCommand ReturnToGameCommand { get; set; }
+        public SettingsViewModel(INavigationService navigationService, SettingsDatabaseController settingsDatabase) : base(settingsDatabase)
         {
             GetSettings();
-            SaveSettingsCommand = new Command(async () =>
+            SaveSettingsCommand = new DelegateCommand(async () =>
             {
                 if (BasicSettings.WinningScore <= 0)
                     BasicSettings.WinningScore = 200;
-                await App.SettingsDatabase.SaveBasicSettingsAsync(BasicSettings);
-                await App.Current.MainPage.Navigation.PopModalAsync();
+                await SettingsDatabase.SaveBasicSettingsAsync(BasicSettings);
+                await navigationService.GoBackAsync();
             });
-            ReturnToGameCommand = new Command(async () =>
+            ReturnToGameCommand = new DelegateCommand(async () =>
             {
-                await App.Current.MainPage.Navigation.PopModalAsync();
+                await navigationService.GoBackAsync();
             });
         }
+
         async void GetSettings()
         {
-            BasicSettings = await App.SettingsDatabase.GetBasicSettingsAsync();
+            BasicSettings = await SettingsDatabase.GetBasicSettingsAsync();
         }
     }
 }

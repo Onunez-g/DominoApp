@@ -1,50 +1,27 @@
 ﻿using DominoApp.Data;
+using DominoApp.ViewModels;
 using DominoApp.Views;
-using System;
-using Xamarin.Forms;
-using Xamarin.Forms.Xaml;
+using Prism;
+using Prism.Ioc;
+using Prism.Unity;
 
 namespace DominoApp
 {
-    public partial class App : Application
+    public partial class App : PrismApplication
     {
-        static MatchDatabaseController matchDatabase;
-        public static MatchDatabaseController MatchDatabase
-        {
-            get
-            {
-                if (matchDatabase == null)
-                    matchDatabase = new MatchDatabaseController();
-                return matchDatabase;
-            }
-        }
-        static SettingsDatabaseController settingsDatabase;
-        public static SettingsDatabaseController SettingsDatabase
-        {
-            get
-            {
-                if (settingsDatabase == null)
-                    settingsDatabase = new SettingsDatabaseController();
-                return settingsDatabase;
-            }
-        }
-        public App()
+        public App(IPlatformInitializer initializer = null) : base(initializer) { }
+        protected override void OnInitialized()
         {
             InitializeComponent();
 
-            MainPage = new MatchView();
+            NavigationService.NavigateAsync(NavConstants.MatchPage);
         }
-
-        protected override void OnStart()
+        protected override void RegisterTypes(IContainerRegistry containerRegistry)
         {
-        }
-
-        protected override void OnSleep()
-        {
-        }
-
-        protected override void OnResume()
-        {
+            containerRegistry.RegisterForNavigation<MatchView, MatchViewModel>();
+            containerRegistry.RegisterForNavigation<SettingsPage, SettingsViewModel>();
+            containerRegistry.Register<MatchDatabaseController>();
+            containerRegistry.Register<SettingsDatabaseController>();
         }
     }
 }
