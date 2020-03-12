@@ -16,7 +16,6 @@ namespace DominoApp.Views
         public MatchView()
         {
             InitializeComponent();
-            BindingContext = new MatchViewModel();
         }
     }
 }

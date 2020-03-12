@@ -1,80 +1,78 @@
-﻿using DominoApp.Models;
-using DominoApp.Views;
-using System;
-using System.Collections.Generic;
+﻿using DominoApp.Data;
+using DominoApp.Models;
+using Prism.Commands;
+using Prism.Navigation;
+using Prism.Services;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Windows.Input;
-using Xamarin.Forms;
 
 namespace DominoApp.ViewModels
 {
-    class MatchViewModel : INotifyPropertyChanged
+    class MatchViewModel : BaseViewModel
     {
-        public BasicSettings BasicSettings { get; set; }
         public MatchRound MatchRound { get; set; } = new MatchRound();
         public int ThemTotalScore { get; set; } 
         public int WeTotalScore { get; set; } 
         public bool IsRefreshing { get; set; }
+        public bool IsEmptyList { get; set; }
         public ObservableCollection<MatchRound> MatchRounds { get; set; } = new ObservableCollection<MatchRound>();
-        public ICommand AddMatchRoundCommand { get; set; }
-        public ICommand DeleteMatchRoundCommand { get; set; }
-        public ICommand NewMatchCommand { get; set; }
-        public ICommand RefreshCommand { get; set; }
-        public ICommand GoToSettingsCommand { get; set; }
-        public MatchViewModel()
+        public DelegateCommand AddMatchRoundCommand { get; set; }
+        public DelegateCommand<MatchRound> DeleteMatchRoundCommand { get; set; }
+        public DelegateCommand NewMatchCommand { get; set; }
+        public DelegateCommand RefreshCommand { get; set; }
+        public DelegateCommand GoToSettingsCommand { get; set; }
+        readonly MatchDatabaseController _matchDatabase;
+        public MatchViewModel(INavigationService navigationService, IPageDialogService pageDialog, MatchDatabaseController matchDatabase, SettingsDatabaseController settingsDatabase): base(settingsDatabase)
         {
+            _matchDatabase = matchDatabase;
             GetSettings();
             GetMatchRounds();
-            AddMatchRoundCommand = new Command(async () =>
+            AddMatchRoundCommand = new DelegateCommand(async () =>
             {
+                GetSettings();
                 bool isNewGame = false;
                 if(MatchRound.WeScore == 0 && MatchRound.ThemScore == 0)
                 {
-                    await App.Current.MainPage.DisplayAlert("Error", "El resultado de la ronda no puede estar en blanco", "Cancelar");
+                    await pageDialog.DisplayAlertAsync("Error", "El resultado de la ronda no puede estar en blanco", "Cancelar");
                     return;
                 }
-                await App.MatchDatabase.SaveMatchRound(MatchRound);
+                await matchDatabase.SaveMatchRound(MatchRound);
                 if(WeTotalScore + MatchRound.WeScore >= BasicSettings.WinningScore || ThemTotalScore + MatchRound.ThemScore >= BasicSettings.WinningScore)
                 {
                     string winnerTeam = WeTotalScore + MatchRound.WeScore > ThemTotalScore + MatchRound.ThemScore ? "Nosotros" : "Ellos";
-                    isNewGame =  await App.Current.MainPage.DisplayAlert("GANADOR", $"El equipo de {winnerTeam} ha ganado!", "Nueva partida", "Cerrar");
+                    isNewGame =  await pageDialog.DisplayAlertAsync("GANADOR", $"El equipo de {winnerTeam} ha ganado!", "Nueva partida", "Cerrar");
                 }
                 if (isNewGame)
                 {
-                    await App.MatchDatabase.DeleteAllMatchRounds();
+                    await matchDatabase.DeleteAllMatchRounds();
                 }
                 GetMatchRounds();
                 MatchRound = new MatchRound();
             });
-            DeleteMatchRoundCommand = new Command<MatchRound>(async (round) =>
+            DeleteMatchRoundCommand = new DelegateCommand<MatchRound>(async (round) =>
             {
-                await App.MatchDatabase.DeleteMatchRound(round.Id);
+                await matchDatabase.DeleteMatchRound(round.Id);
                 GetMatchRounds();
             });
-            NewMatchCommand = new Command(async () =>
+            NewMatchCommand = new DelegateCommand(async () =>
             {
-                await App.MatchDatabase.DeleteAllMatchRounds();
+                await matchDatabase.DeleteAllMatchRounds();
                 GetMatchRounds();
             });
-            RefreshCommand = new Command(() => GetMatchRounds());
-            GoToSettingsCommand = new Command(async () => await App.Current.MainPage.Navigation.PushModalAsync(new SettingsPage()));
+            RefreshCommand = new DelegateCommand(() => GetMatchRounds());
+            GoToSettingsCommand = new DelegateCommand(async () => await navigationService.NavigateAsync(NavConstants.SettingsPage));
         }
         async void GetMatchRounds()
         {
-            MatchRounds = new ObservableCollection<MatchRound>(await App.MatchDatabase.GetMatchRoundsAsync());
+            MatchRounds = new ObservableCollection<MatchRound>(await _matchDatabase.GetMatchRoundsAsync());
             WeTotalScore = MatchRounds.Sum(x => x.WeScore);
             ThemTotalScore = MatchRounds.Sum(x => x.ThemScore);
             IsRefreshing = false;
+            IsEmptyList = MatchRounds.Count == 0;
         }
         async void GetSettings()
         {
-            BasicSettings = await App.SettingsDatabase.GetBasicSettingsAsync();
+            BasicSettings = await SettingsDatabase.GetBasicSettingsAsync();
         }
-        #pragma warning disable 67
-        public event PropertyChangedEventHandler PropertyChanged;
-        #pragma warning restore 67
     }
 }
